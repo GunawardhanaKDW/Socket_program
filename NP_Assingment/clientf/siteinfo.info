@@ -1,0 +1,9 @@
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+Name:	www.google.com
+Address: 172.217.174.228
+Name:	www.google.com
+Address: 2404:6800:4009:801::2004
+
