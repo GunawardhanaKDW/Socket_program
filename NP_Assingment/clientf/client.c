@@ -140,7 +140,7 @@ main(int argc, char **argv)
         					
         					}
               					j=0;    //for next word, init index to 0
-            					for(t=i;t<=(strlen(recvline));t++)
+            					for(t=i+1;t<=(strlen(recvline));t++)
             					{
             						fileContent[j]=recvline[t];
             						j++;	
