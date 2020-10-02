@@ -26,30 +26,11 @@ main(int argc, char **argv)
 	}
 	int port = atoi(argv[2]);
 	if(port == 80 && strcmp(argv[3], "GET") == 0){
-		sprintf(website ,"nslookup ""%s"" > siteinfo.info", argv[1]);
-		system(website);
-		if ((fptr = fopen("siteinfo.info", "r")) == NULL) {
-        	printf("Error! opening file");
-       	 exit(1);
-    		}
-    		k =0;
-		while (fgets(line, sizeof(line), fptr)) {
-       		k++;
-       		if( k == 6 )
-       			strcat(fileContent, line);
-       		
-   		}
-   		
-   		for(d = 0; d < strlen(fileContent) - 9; d++){
-   			ipaddress[d] = fileContent[d+9];
-   		
-   		}
-   		printf(ipaddress);
+		
    		strcpy(directory, "pages/");
    		strcat(directory, argv[4]); 
    		sprintf(wgetreq ,"wget -O ""%s"" https://""%s""", directory, argv[1]);
    		system(wgetreq);
-   		fclose(fptr);
    		return 1;
 			
 	}else if(port == 80){
@@ -127,7 +108,6 @@ main(int argc, char **argv)
 	{
 		recvline[n] = 0;
 	}
-
 		for(i=0; i<=(strlen(recvline)); i++)
     		{		
     				
@@ -153,10 +133,9 @@ main(int argc, char **argv)
 	        			}else{
 	        				msgrcv[i] = recvline[i];
         				}
-        			
+        				
         			
        	 }
- 
 	printf("%s\n", msgrcv);
 	if(strcmp(msgrcv ,"HTTP/1.0 200 OK") == 0)
 	{	
@@ -167,11 +146,5 @@ main(int argc, char **argv)
    	
    	}
    	
-	if (n < 0) 
-	{
-		printf("read error");
-		return 1;
-	}
-
 	exit(0);
 }
