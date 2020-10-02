@@ -1,9 +1,9 @@
-#include	"utils.h"
+#include "utils.h"
 #include <fcntl.h>
 
 int main(int argc, char **argv)
 {
-	int			listenfd, connfd,n;
+	int			listenfd, connfd,n, count;
 	socklen_t		len;
 	pid_t			childpid;
 	struct sockaddr_in	servaddr, cliaddr;
@@ -74,12 +74,11 @@ void runC(int connfd){
 	
 	bzero(msgrcv, sizeof(msgrcv));	//Message Reading
 	n = read(connfd, msgrcv, MAXLINE);	//Message Received
-    	
     	for(int d = 0;d < 4;d++ ){		//Get message type ex:- HTTP 
 		type[d] = msgrcv[d+16]; 		
 		
 	}
-
+	
     	// If HTTP request
  	if(strcmp(type, "HTTP") == 0){
  		
@@ -98,7 +97,7 @@ void runC(int connfd){
 			GET("sliit.html", connfd);
 			
 		}else{
-			snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/404 Not Found");
+			snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/\r\n\r\n404_Not_Found");
 			if ( write(connfd, (char*)buff, strlen((char*)buff)) != strlen((char*)buff)) 
 			{
 			fprintf(stderr, "accept failed\n");
@@ -154,8 +153,6 @@ void runC(int connfd){
 			PUT(file, connfd, newString[3]);
 			
 		
-		}else{
-			printf("----error-----");
 		}
 	
 	}
@@ -176,30 +173,12 @@ void GET(char fileName[10], int connfd ){
     	char sendline[MAXLINE + 1];
 	size_t characters;
 	size_t bufsize = 100;
-	char pages[2][20] = {{"hello.html"}, {"index.html"}, {"sliit.html"}};
+	//char pages[3][20] = {{"hello.html"}, {"index.html"}, {"sliit.html"}};
 	size_t nn;
 	char a[20];
 	strcpy(directory, "pages/");
-    	
-	if(strcmp(fileName, pages[0]) == 0 ){
-		if ((fptr = fopen(strcat(directory, pages[0]), "r")) == NULL) {
-        	printf("Error! opening file");
-       	 exit(1);
-    		}
-	
-	}else if(strcmp(fileName, "index.html") == 0 ){
-		if ((fptr = fopen(strcat(directory, pages[1]), "r")) == NULL) {
-        	printf("Error! opening file");
-       	 exit(1);
-    		}
-	
-	}else if(strcmp(fileName, "sliit.html") == 0 ){
-		if ((fptr = fopen(strcat(directory, pages[2]), "r")) == NULL) {
-        	printf("Error! opening file");
-        	exit(1);
-    		}
-	}else{
-		snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/404 Not Found");
+	if ((fptr = fopen(strcat(directory, fileName), "r")) == NULL) {
+        	snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/""404 Not Found""");
 		if ( write(connfd, (char*)buff, strlen((char*)buff)) != strlen((char*)buff)) 
 		{
 		fprintf(stderr, "accept failed\n");
@@ -241,4 +220,3 @@ void PUT(char fileName[10], int connfd, char Content[1000]){
 }
 	
 	
-
