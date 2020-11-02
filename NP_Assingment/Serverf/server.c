@@ -1,4 +1,4 @@
-#include "utils.h"
+#include	"utils.h"
 #include <fcntl.h>
 
 int main(int argc, char **argv)
@@ -74,39 +74,27 @@ void runC(int connfd){
 	
 	bzero(msgrcv, sizeof(msgrcv));	//Message Reading
 	n = read(connfd, msgrcv, MAXLINE);	//Message Received
-    	for(int d = 0;d < 4;d++ ){		//Get message type ex:- HTTP 
-		type[d] = msgrcv[d+16]; 		
+	printf(msgrcv);
+	printf("%d", strlen(msgrcv));
+    	for(int d = 0;d < 3;d++ ){		//Get message type ex:- HTTP 
+		type[d] = msgrcv[d]; 
+			
 		
 	}
-	
     	// If HTTP request
- 	if(strcmp(type, "HTTP") == 0){
- 		
-		for(int k = 0;k < 20;k++){ 	//Remove the trailing chars
-			fileOpen[k] = msgrcv[k];
-		
-		}
-		
-		if((ptr = strstr(fileOpen, "index")) != NULL){
-			GET("index.html", connfd);
-			
-		}else if((ptr = strstr(fileOpen, "hello")) != NULL){
-			GET("hello.html", connfd);
-			
-		}else if((ptr = strstr(fileOpen, "sliit")) != NULL){
-			GET("sliit.html", connfd);
-			
-		}else{
-			snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/\r\n\r\n404_Not_Found");
-			if ( write(connfd, (char*)buff, strlen((char*)buff)) != strlen((char*)buff)) 
-			{
-			fprintf(stderr, "accept failed\n");
-			
+ 	if(strcmp(type, "GET") == 0 && (strlen(msgrcv) > 100)){
+		for(int k = 0;k < 20 ;k++){ 	//Remove the trailing chars
+			if(msgrcv[k+5] == ' '){
+				break;
 			}
-			exit(1);
-       	
-			
+			fileOpen[k] = msgrcv[k+5];
+				
 		}
+		printf("Name is %s", fileOpen);
+		GET(fileOpen, connfd);
+		
+		//snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/\r\n\r\n404_Not_Found");
+
  	
  	}else{	
  	
@@ -140,17 +128,12 @@ void runC(int connfd){
         	
             			
     		}
-    	
-    		strcpy(port,newString[0]);
-    		strcpy(method,newString[1]);
-    		strcpy(file,newString[2]);
-    		strcpy(Content,newString[3]);
-    				
-		if(strcmp(method, "GET") == 0 ){
-			GET(file, connfd);
+  				
+		if(strcmp(newString[1], "GET") == 0 ){
+			GET(newString[2], connfd);
 		
-		}else if(strcmp(method, "PUT") == 0 ){
-			PUT(file, connfd, newString[3]);
+		}else if(strcmp(newString[1], "PUT") == 0 ){
+			PUT(newString[2], connfd, newString[3]);
 			
 		
 		}
@@ -176,13 +159,15 @@ void GET(char fileName[10], int connfd ){
 	//char pages[3][20] = {{"hello.html"}, {"index.html"}, {"sliit.html"}};
 	size_t nn;
 	char a[20];
+	
 	strcpy(directory, "pages/");
+	
 	if ((fptr = fopen(strcat(directory, fileName), "r")) == NULL) {
-        	snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/""404 Not Found""");
+        	snprintf((char*)buff, sizeof(buff), "HTTP/1.0 404 Not Found/\r\n\r\n404_Not_Found");
 		if ( write(connfd, (char*)buff, strlen((char*)buff)) != strlen((char*)buff)) 
 		{
-		fprintf(stderr, "accept failed\n");
-		exit (1);
+			fprintf(stderr, "accept failed\n");
+			exit (1);
 		}
 	}
     	// reads text until newline is encountered
